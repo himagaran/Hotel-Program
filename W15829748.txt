@@ -1,0 +1,301 @@
+                        2014054 -  Murugaiah Himagaran - W15829748
+                        
+
+------------------------Source Code-----------------------
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+import static java.lang.System.err;
+import static java.lang.System.out;
+
+public class Hotel_Room {
+	private static String[] hotel = new String[10];
+	private static int roomNum;
+	private static String roomName;
+
+	public static void main(String[] args) {
+		startPage();
+		options();
+	}
+
+	public static void options() {
+		// Initializing the array with e
+		for (int x = 0; x < hotel.length; x++) {
+			hotel[x] = "e";
+		}
+		Scanner sc = new Scanner(System.in);
+		boolean loop = true;
+		while (loop == true) {
+			out.print("\nENTER OPTION : ");
+			String option = sc.next().toLowerCase();
+			if (option.equals("v")) {
+				viewAllRooms();
+			} else if (option.equals("a")) {
+				addCustomer();
+			} else if (option.equals("e")) {
+				emptyRooms();
+			} else if (option.equals("d")) {
+				deleteDetails();
+			} else if (option.equals("f")) {
+				findRoom();
+			} else if (option.equals("l")) {
+				loadDetails();
+			} else if (option.equals("o")) {
+				orderSorting();
+			} else if (option.equals("q")) {
+				err.print("System Exited");
+				System.exit(0);
+			} else {
+				err.print("Invalid Input");
+			}
+		}
+	}
+
+	public static void startPage() {
+		Date d = new Date();
+		SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss a");
+		out.print(
+				"\t\t\t\t |  Hotel De Plaza  |\n\t-------------------------------------------------------------------------\t\n\tUser: W15829748\t\t\tLogin Time : "
+						+ time.format(d)
+						+ "\n\nBOOKING OPTIONS\n---------------------------\n(V) to View all rooms\n(E) to View empty rooms\n(A) to Add Customer\n"
+						+ "(D) to Delete Customer\n"
+						+ "(L) to Load saved data\n(O) to View rooms in order\n(F) to Find room via Customer name\n(Q) to Exit\n");
+
+	}
+
+	public static void addCustomer() {
+		// creating two new scanner object sc for getting integer value , sc1
+		// for getting string value
+		Scanner sc = new Scanner(System.in);
+		Scanner sc1 = new Scanner(System.in);
+		out.print("\nEnter room number (1-10) : ");
+		if (sc.hasNextInt()) {
+			roomNum = sc.nextInt();
+			// validating the input between 1-10
+			if (roomNum > 0 && roomNum < 11) {
+				out.print("Enter room name (" + roomNum + ") : ");
+				if (sc1.hasNext()) {
+					roomName = sc1.next().toLowerCase();
+					// replacing the array element
+					hotel[roomNum - 1] = roomName;
+					out.print("Wish to add the details to a text file (Y/N) : ");
+					String addDetails = sc.next();
+					if (addDetails.equals("y")) {
+						storeFile();
+						out.println("Successfully added to the text file ");
+					} else if (addDetails.equals("n")) {
+						out.println("Successfully added without adding to a text file ");
+					} else {
+						err.println("Invalid Input");
+					}
+				} else {
+					err.println("Invalid Input");
+					System.exit(0);
+				}
+			} else {
+				err.println("Valid room range is (1-10)");
+				System.exit(0);
+			}
+		} else {
+			err.println("Invalid Input");
+			System.exit(0);
+		}
+	}
+
+	public static void viewAllRooms() {
+		for (int i = 0; i < hotel.length; i++) {
+			if (i < 10) {
+				if (hotel[i].equals("e")) {
+					out.print("\nRoom " + (i + 1) + " is available");
+				} else {
+					out.print("\nRoom " + (i + 1) + " is in use by " + hotel[i].toUpperCase());
+				}
+			} else {
+				if (hotel[i].equals("e")) {
+					out.print("\nRoom " + (i + 1) + " is available");
+				} else {
+					out.print("\nRoom " + (i + 1) + " is in use by " + hotel[i].toUpperCase());
+				}
+			}
+		}
+		out.println("");
+	}
+
+	public static void emptyRooms() {
+		for (int i = 0; i < hotel.length; i++) {
+			if (hotel[i].equals("e")) {
+				out.print("\nRoom " + (i + 1) + " is Empty");
+			}
+		}
+		out.println("");
+	}
+
+	public static void deleteDetails() {
+		Scanner sc = new Scanner(System.in);
+		out.print("\nEnter Room name: ");
+		// validating the input as integer
+		if (sc.hasNext()) {
+			roomName = sc.next();
+			for (int x = 0; x < hotel.length; x++) {
+				if (hotel[x].equalsIgnoreCase(roomName.toLowerCase())) {
+					out.println("Successfully deleted");
+					hotel[x] = "e";
+					storeFile();
+
+				}
+			}
+
+		} else {
+			err.println("Invalid Input");
+		}
+	}
+
+	// this method for search the element in array
+	public static void findRoom() {
+		Scanner sc = new Scanner(System.in);
+		out.print("\nEnter Customer name for room : ");
+		String search;
+		search = sc.next();
+		boolean found = false;
+		for (int x = 0; x < hotel.length; x++) {
+			if (hotel[x].equalsIgnoreCase(search)) {
+				out.print("Room " + (x + 1) + " is occupied by " + hotel[x]);
+				found = true;
+
+			}
+
+		}
+		if (!found) {
+			err.println("Customer not found");
+
+		}
+	}
+
+	public static void orderSorting() {
+		int roomPositive = 1;
+		String[] hotelTemp = new String[10];
+		String[] roomNumTemp = new String[10];
+
+		// copying the element to another array
+		for (int j = 0; j < hotel.length; j++) {
+			hotelTemp[j] = hotel[j];
+		}
+		// replacing the e with empty
+		for (int i = 0; i < hotel.length; i++) {
+			if (hotel[i].equals("e")) {
+				hotel[i] = "Empty" + (i + roomPositive);
+			} else {
+				hotel[i] = hotelTemp[i] + " " + (i + roomPositive);
+			}
+		}
+
+		boolean flag = true;
+		String temp;
+
+		while (flag) {
+			flag = false;
+			for (int x = 0; x < (hotel.length - 1); x++) {
+				if (hotel[x].compareToIgnoreCase(hotel[x + 1]) > 0) {
+					temp = hotel[x];
+					hotel[x] = hotel[x + 1];
+					hotel[x + 1] = temp;
+					flag = true;
+				}
+			}
+		}
+		String replace;
+		for (int i = 0; i < hotel.length; i++) {
+			replace = hotel[i].replaceAll("[a-zA-Z\\s]", "");
+			roomNumTemp[i] = replace;
+		}
+		secondSort(roomNumTemp, hotelTemp);
+	}
+
+	public static void secondSort(String[] roomNumTemp, String[] hotelTemp) {
+		boolean flag = true;
+		String temp;
+
+		while (flag) {
+			flag = false;
+			for (int x = 0; x < (hotelTemp.length - 1); x++) {
+				if (hotelTemp[x].compareToIgnoreCase(hotelTemp[x + 1]) > 0) {
+					temp = hotelTemp[x];
+					hotelTemp[x] = hotelTemp[x + 1];
+					hotelTemp[x + 1] = temp;
+					flag = true;
+				}
+			}
+		}
+		for (int j = 0; j < hotelTemp.length; j++) {
+			if (!(hotelTemp[j].equals("e"))) {
+				out.print("\nRoom " + roomNumTemp[j] + " is occupied by " + hotelTemp[j].toUpperCase());
+			}
+		}
+		hotel = hotelTemp;
+		out.println();
+	}
+
+	// this method for get customer details into array
+	public static void loadDetails() {
+		try {
+			// getting the hotel text file
+			File file = new File("Room.txt");
+			Scanner sc = new Scanner(file);
+			int i = 0;
+			// reading the each line and storing to array
+			while (sc.hasNextLine()) {
+				String line = sc.nextLine();
+				hotel[i] = line;
+				i++;
+			}
+			out.println("Succesfully loaded");
+		} catch (IOException e) {
+			err.println("File not found");
+		}
+	}
+
+	public static void storeFile() {
+		try {
+			// getting the hotel text file
+			File file = new File("Room.txt");
+			PrintWriter pw = new PrintWriter(file);
+			// writing the each line which in the array to text file
+			for (int x = 0; x < hotel.length; x++) {
+				pw.println(hotel[x]);
+			}
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			err.println("File not found");
+		}
+	}
+}
+
+
+
+------------------------Test Grid-----------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|    Test No	|                    Test Case			|    Expected	|     Actual		|     Success   |		
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	1	|                 if menu continues with "Enter Option"	|     loops		|     loops  	|      Yes	      |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	2	|       finding a customer that doesnt exist		|     Error 		| Error Message	|      Yes	      |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	3	|      deleting a customer that doesnt exist		|     Error 		| Error Message	|      Yes	      |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	4	|	  adding customer to a room		|     Added		|    Added		|      Yes	      |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	5	|       add customer above the room limit		|     Error		|    Error Message	|      Yes	      |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	6	|	   view empty rooms			|     Viewed	|    Viewed	|      Yes	       |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|	7	|	Text file missing			|     Error		|    Error		|      Yes	       |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
